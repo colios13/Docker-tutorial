@@ -12,6 +12,9 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
+    depends_on:
+      mysql:
+        condition: service_healthy
   mysql:
     image: mysql:8.0
     volumes:
@@ -19,6 +22,12 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: todos
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 40
 
 volumes:
   todo-mysql-data:
